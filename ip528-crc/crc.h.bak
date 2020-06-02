@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <netinet/in.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/select.h>
+#include <time.h>
+#include <errno.h>
+#include <net/if.h>
+#include <net/if_arp.h>
+#include <arpa/inet.h>
+#include <sys/ioctl.h>
+
+#define IFNAME "eth0"
+#define MAST_PORT 8888
+#define BUFFER_LEN 64
+
+/*
+* Function:     wtlib_crc16_tc
+* Description:  CRC16计算(初始值为1)
+* Input:        const uint8_t *pui8Src-源数据
+                uint32_t ui32Len-数据长度
+* Output:       NO
+* Use Variable: NO
+* Return:       CRC16校验值
+* Others:       计算给定长度数据的16位CRC
+*/
+uint16_t wtlib_crc16_tc(const uint8_t *pui8Src, uint32_t ui32Len)
+{
+    //初始值为1
+    uint32_t ui32fcs = 0xffff;
+
+    while(ui32Len > 0)
+    {
+        ui32fcs = (ui32fcs >> 8) ^ s_aui16ValueTable[(ui32fcs ^ *pui8Src) & 0xff];
+        ui32Len--;
+        pui8Src++;
+    }
+
+    //取反
+    return ~ui32fcs;
+}
